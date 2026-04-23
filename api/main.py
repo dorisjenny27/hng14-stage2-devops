@@ -19,9 +19,11 @@ redis_client = redis.Redis(
     decode_responses=True
 )
 
+
 @app.get("/health")
 def health():
     return {"status": "healthy"}
+
 
 @app.post("/submit")
 def create_job():
@@ -29,6 +31,7 @@ def create_job():
     redis_client.hset(f"job:{job_id}", "status", "queued")
     redis_client.rpush("job_queue", job_id)
     return {"job_id": job_id}
+
 
 @app.get("/status/{job_id}")
 def get_job(job_id: str):
