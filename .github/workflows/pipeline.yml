@@ -34,13 +34,14 @@ jobs:
         run: |
           cd frontend
           npm install
+          npm install eslint@8 --save-dev
 
       - name: Lint JavaScript
         run: |
           cd frontend
-          npx eslint@8 app.js --no-eslintrc --rule '{"no-unused-vars": "warn"}'
+          ./node_modules/.bin/eslint app.js --no-eslintrc --rule '{"no-unused-vars": "warn"}'
 
-      - name: Lint Dockerfiles
+      - name: Lint api Dockerfile
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: api/Dockerfile
@@ -234,4 +235,12 @@ jobs:
               HEALTHY=true
               break
             fi
-            sl
+            sleep 5
+          done
+          if [ "$HEALTHY" = "true" ]; then
+            echo "Deploy successful!"
+            docker compose up -d --no-deps --build worker frontend
+          else
+            echo "Health check failed - keeping old container"
+            exit 1
+          fi
