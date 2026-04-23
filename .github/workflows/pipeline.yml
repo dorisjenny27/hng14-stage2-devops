@@ -38,7 +38,7 @@ jobs:
       - name: Lint JavaScript
         run: |
           cd frontend
-          npx eslint app.js --no-eslintrc --rule '{"no-unused-vars": "warn"}'
+          npx eslint@8 app.js --no-eslintrc --rule '{"no-unused-vars": "warn"}'
 
       - name: Lint Dockerfiles
         uses: hadolint/hadolint-action@v3.1.0
