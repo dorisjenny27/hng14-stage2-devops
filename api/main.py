@@ -39,4 +39,3 @@ def get_job(job_id: str):
     if not data:
         return {"error": "not found"}
     return {"job_id": job_id, "status": data.get("status")}
-    
