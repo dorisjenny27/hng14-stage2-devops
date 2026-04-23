@@ -1,4 +1,4 @@
-# HNG Stage 2 — Containerized Job Processing System
+# HNG Stage 2: Containerized Job Processing System
 
 A microservices application with a frontend, API, worker, and Redis queue; fully containerized with Docker and automated with CI/CD.
 
