@@ -1,17 +1,17 @@
-FROM python:3.11-slim AS builder
+FROM node:18-slim AS builder
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip==24.0 && \
-    pip install --no-cache-dir -r requirements.txt
+COPY package.json .
+RUN npm install --omit=dev
 
-FROM python:3.11-slim
+FROM node:18-slim
 WORKDIR /app
 RUN adduser --disabled-password --no-create-home appuser
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=builder /usr/local/bin/uvicorn /usr/local/bin/uvicorn
-COPY main.py .
+COPY --from=builder /app/node_modules ./node_modules
+COPY app.js .
+COPY views ./views
+COPY package.json .
 USER appuser
-EXPOSE 8000
+EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+    CMD node -e "require('http').get('http://localhost:3000/', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1))"
+CMD ["node", "app.js"]
